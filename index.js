@@ -1,5 +1,8 @@
 const {Client, Intents} = require('discord.js');
 const dayjs = require('dayjs');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const client = new Client({
     intents: [
@@ -23,9 +26,15 @@ function giveRole() {
     const guild = client.guilds.resolve('802942121391816704');
 
     guild.members.fetch().then(members => {
-        members.forEach(member => {
-            console.log(member.user.username);
-        });
+        let randomMember = members.random();
+        
+        console.log(randomMember);
+
+        // Custom nickname
+        randomMember.setNickname(
+            `[DSA] ${randomMember.user.username}`,
+            `Congratulazioni ${randomMember.user.username}, sei il DSA del giorno!`
+        );
     });
 }
 
@@ -33,7 +42,7 @@ async function checkTimeout() {
     setTimeout(() => {
         checkNewDay(giveRole);
         checkTimeout();
-    }, 1000 * 1);
+    }, 1000);
 }
 
 client.once('ready', () => {
@@ -42,4 +51,4 @@ client.once('ready', () => {
     checkTimeout();
 });
 
-client.login('ODE0MTcyMTMwOTQ1Nzk0MTI4.YDZ-4g.M03A5QLfZTNQ7prhWccjiqbgC_4');
+client.login(process.env.TOKEN);
