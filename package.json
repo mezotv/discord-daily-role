@@ -1,5 +1,5 @@
 {
-  "name": "disable-bot",
+  "name": "discord-daily-role",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Fraccs/disable-bot.git"
+    "url": "git+https://github.com/Fraccs/discord-daily-role.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Fraccs/disable-bot/issues"
+    "url": "https://github.com/Fraccs/discord-daily-role/issues"
   },
-  "homepage": "https://github.com/Fraccs/disable-bot#readme",
+  "homepage": "https://github.com/Fraccs/discord-daily-role#readme",
   "dependencies": {
     "dayjs": "^1.11.1",
     "discord.js": "^13.6.0",
