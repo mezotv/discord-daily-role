@@ -14,6 +14,7 @@ const client = new Client({
 });
 
 let currentDay = dayjs().minute();
+let roleID;
 
 // Calls 'callback' if it is a new day
 function checkNewDay(callback) {
@@ -24,7 +25,7 @@ function checkNewDay(callback) {
 }
 
 // Gives the role specified by the slash command to a random user
-function giveRole(roleID) {
+function giveRole() {
     const guild = client.guilds.resolve('802942121391816704');
 
     guild.members.fetch().then(members => {
@@ -48,13 +49,13 @@ function giveRole(roleID) {
 }
 
 // Asyncronous check, (called once per second)
-async function checkTimeout(roleID) {
+async function checkTimeout() {
     setTimeout(() => {
         checkNewDay(() => {
-            giveRole(roleID)
+            giveRole()
         });
 
-        checkTimeout(roleID);
+        checkTimeout();
     }, 1000);
 }
 
@@ -78,6 +79,8 @@ client.once('ready', () => {
             }
         ]
     })
+
+    checkTimeout();
 });
 
 // Slash command interaction
@@ -87,9 +90,7 @@ client.on('interactionCreate', async (interaction) => {
     const {commandName, options} = interaction;
 
     if(commandName.toLowerCase() === 'dailyrole') {
-        let roleID = options.data[0].value;
-
-        checkTimeout(roleID);
+        roleID = options.data[0].value;
     }
 })
 
