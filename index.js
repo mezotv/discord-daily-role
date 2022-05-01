@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+/* ---- Globals ---- */
 const client = new Client({
     intents: [
         Intents.FLAGS.GUILDS,
@@ -13,7 +14,6 @@ const client = new Client({
 });
 
 let currentDay = dayjs().minute();
-let roleID;
 
 // Calls 'callback' if it is a new day
 function checkNewDay(callback) {
@@ -24,43 +24,37 @@ function checkNewDay(callback) {
 }
 
 // Gives the role specified by the slash command to a random user
-function giveRole() {
+function giveRole(roleID) {
     const guild = client.guilds.resolve('802942121391816704');
 
     guild.members.fetch().then(members => {
         const randomMember = members.random();
         let role = guild.roles.cache.get(roleID);
 
-        /* ---- Deleting and recreating the role
-        (more efficient than removing the role) ---- */
-        role.delete();
-
-        role = guild.roles.create({
-            name: role.name,
-            color: role.color,
-            hoist: role.hoist,
-            position: role.position,
-            permissions: role.permissions,
-            mentionable: role.mentionable
+        /* ---- Removing the role from previous members ---- */
+        members.forEach(member => {
+            member.roles.cache.some(role => {
+                if(role.id === roleID) {
+                    member.roles.remove(role);
+                }
+            });
         });
 
-        roleID = role.id; // Updating the roleID
-
-        // // Updating the user
+        /* ---- Updating the random user ---- */
         // randomMember.edit({
-        //     nick: `[DSA] ${randomMember.user.username}`,
-        //     roles: randomMember.roles.add(guild.roles.cache.some(role => {
-        //         role.id === '970329924051288184'
-        //     }))
-        // }, `Congratulazioni ${randomMember.user.username}, sei il DSA del giorno!`);
+        //     roles:
+        // });
     });
 }
 
 // Asyncronous check, (called once per second)
-async function checkTimeout() {
+async function checkTimeout(roleID) {
     setTimeout(() => {
-        checkNewDay(giveRole);
-        checkTimeout();
+        checkNewDay(() => {
+            giveRole(roleID)
+        });
+
+        checkTimeout(roleID);
     }, 1000);
 }
 
@@ -84,8 +78,6 @@ client.once('ready', () => {
             }
         ]
     })
-
-    checkTimeout();
 });
 
 // Slash command interaction
@@ -95,7 +87,9 @@ client.on('interactionCreate', async (interaction) => {
     const {commandName, options} = interaction;
 
     if(commandName.toLowerCase() === 'dailyrole') {
-        roleID = options.data[0].value;
+        let roleID = options.data[0].value;
+
+        checkTimeout(roleID);
     }
 })
 
